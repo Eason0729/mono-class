@@ -1,0 +1,21 @@
+[package]
+name = "mono-class"
+version = "0.1.0"
+edition = "2021"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.release]
+lto = true
+opt-level = 's'
+strip = "symbols"
+
+[dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+clap_lex = "0.7.0"
+futures = "0.3.30"
+homedir = "0.2.1"
+log = "0.4.21"
+simplelog = "0.12.2"
+smol = "2.0.0"
