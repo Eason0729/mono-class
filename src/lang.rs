@@ -69,13 +69,13 @@ impl<'a> Display for LineAST<'a> {
             f,
             "{}",
             match self {
-                LineAST::StaticImport(x) => "static import",
-                LineAST::Import(x) => "import",
-                LineAST::Package(x) => "package",
+                LineAST::StaticImport(_) => "static import",
+                LineAST::Import(_) => "import",
+                LineAST::Package(_) => "package",
                 LineAST::Decorater => "decorater",
                 LineAST::Comment => "comment",
-                LineAST::Other(x) => "other",
-                LineAST::Visibility(x) => "visibility",
+                LineAST::Other(_) => "other",
+                LineAST::Visibility(_) => "visibility",
             }
         )
     }
