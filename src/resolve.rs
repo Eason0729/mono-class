@@ -1,8 +1,18 @@
 use std::path::Path;
 
+use smol::fs::metadata;
+
 use crate::{lang::OsStrExt, map::SourceMap};
 
 pub async fn resolve(path: impl AsRef<Path> + Send + 'static) -> Vec<u8> {
+    assert!(
+        metadata(path.as_ref())
+            .await
+            .expect("target file not found")
+            .is_file(),
+        "target is not a file"
+    );
+
     let dir_path = path.as_ref().parent().unwrap().to_path_buf();
 
     let mut map = SourceMap::from_dir(dir_path).await;

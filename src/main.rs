@@ -6,6 +6,7 @@ mod resolve;
 use std::path::PathBuf;
 
 use clap::Parser;
+use futures::executor::block_on;
 
 /// A bundler for Java
 #[derive(Parser, Debug)]
@@ -35,21 +36,28 @@ fn main() {
         args.output.display()
     );
 
-    smol::block_on(async {
-        let content = resolve::resolve(args.file).await;
+    let executor = smol::LocalExecutor::new();
+    executor
+        .spawn(async move {
+            let content = resolve::resolve(args.file).await;
 
-        println!("Dependency solved");
+            println!("Dependency solved");
 
-        let size = content.len();
+            let size = content.len();
 
-        smol::fs::write(&args.output, content)
-            .await
-            .expect("failed to write output");
+            smol::fs::write(&args.output, content)
+                .await
+                .expect("failed to write output");
 
-        println!(
-            "{} bytes has been written to {}",
-            size,
-            args.output.display()
-        );
-    });
+            println!(
+                "{} bytes has been written to {}",
+                size,
+                args.output.display()
+            );
+        })
+        .detach();
+
+    while !executor.is_empty() {
+        block_on(executor.tick());
+    }
 }

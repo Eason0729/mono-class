@@ -1,4 +1,3 @@
-use core::str;
 use std::{
     collections::BTreeMap,
     ffi::{OsStr, OsString},

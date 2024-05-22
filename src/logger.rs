@@ -1,4 +1,4 @@
-use std::fs::OpenOptions;
+use std::{fs::OpenOptions, process::exit};
 
 use log::LevelFilter;
 use simplelog::*;
@@ -19,13 +19,20 @@ pub fn init_logger(verbose: bool) {
         Config::default(),
         log_file,
     )];
-    if verbose {
-        exporter.push(TermLogger::new(
-            LevelFilter::Debug,
-            Config::default(),
-            TerminalMode::Mixed,
-            ColorChoice::Auto,
-        ));
-    }
+    exporter.push(TermLogger::new(
+        match verbose {
+            true => LevelFilter::Debug,
+            false => LevelFilter::Error,
+        },
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ));
     CombinedLogger::init(exporter).unwrap();
+
+    std::panic::set_hook(Box::new(|panic| {
+        log::error!("{}", panic.to_string());
+
+        exit(1);
+    }));
 }
